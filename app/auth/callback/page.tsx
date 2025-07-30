@@ -1,56 +1,79 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useAuth } from "@/hooks/use-google-auth"
 import { exchangeCodeForToken } from "@/lib/google-auth"
-import { Loader2 } from "lucide-react"
 
-export default function AuthCallback() {
+export default function CallbackPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { setUserAndStore } = useAuth() as any
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const handleCallback = async () => {
-      const code = searchParams.get("code")
-      const error = searchParams.get("error")
-
-      if (error) {
-        console.error("OAuth error:", error)
-        router.push("/auth/signin?error=oauth_error")
-        return
-      }
-
-      if (!code) {
-        console.error("No authorization code received")
-        router.push("/auth/signin?error=no_code")
-        return
-      }
-
+    async function handleCallback() {
       try {
-        const user = await exchangeCodeForToken(code)
-        if (user) {
-          setUserAndStore(user)
-          router.push("/")
-        } else {
-          router.push("/auth/signin?error=token_exchange_failed")
+        const code = searchParams.get("code")
+        const error = searchParams.get("error")
+
+        if (error) {
+          console.error("OAuth error:", error)
+          setError(`Authentication error: ${error}`)
+          return
         }
+
+        if (!code) {
+          console.error("No code received")
+          setError("No authentication code received")
+          return
+        }
+
+        console.log("Code received, exchanging for token...")
+        const user = await exchangeCodeForToken(code)
+
+        if (!user) {
+          console.error("Failed to get user data")
+          setError("Failed to exchange token. Please try again.")
+          return
+        }
+
+        // Store user in localStorage
+        localStorage.setItem("google-user", JSON.stringify(user))
+        console.log("User authenticated:", user.email)
+
+        // Redirect to home page
+        router.push("/")
       } catch (error) {
-        console.error("Callback handling error:", error)
-        router.push("/auth/signin?error=callback_error")
+        console.error("Callback error:", error)
+        setError("Authentication failed. Please try again.")
       }
     }
 
     handleCallback()
-  }, [router, searchParams, setUserAndStore])
+  }, [searchParams, router])
 
   return (
-    <div className="min-h-screen bg-[#39557a] flex items-center justify-center">
-      <div className="text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#f5724c] mx-auto mb-4" />
-        <p className="text-[#9cc2db] font-bold">Completing Google sign in...</p>
-        <p className="text-white text-sm mt-2">Please wait while we set up your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-slate-700">
+      <div className="bg-slate-800 p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+        {error ? (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-red-400">Authentication Error</h2>
+            <p className="text-red-300">{error}</p>
+            <button
+              onClick={() => router.push("/")}
+              className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
+            >
+              Return to Home
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-blue-300">Authenticating...</h2>
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-400"></div>
+            </div>
+            <p className="text-gray-300">Please wait while we complete the sign-in process.</p>
+          </div>
+        )}
       </div>
     </div>
   )

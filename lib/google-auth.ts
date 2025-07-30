@@ -13,8 +13,11 @@ export interface GoogleUser {
 
 export const initiateGoogleLogin = () => {
   if (!GOOGLE_CLIENT_ID) {
+    console.error("Google Client ID not configured")
     throw new Error("Google Client ID not configured")
   }
+
+  console.log("Initiating Google login with redirect URI:", GOOGLE_REDIRECT_URI)
 
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
@@ -31,6 +34,7 @@ export const initiateGoogleLogin = () => {
 
 export const exchangeCodeForToken = async (code: string): Promise<GoogleUser | null> => {
   try {
+    console.log("Exchanging code for token...")
     const response = await fetch("/api/auth/google/callback", {
       method: "POST",
       headers: {
@@ -40,10 +44,13 @@ export const exchangeCodeForToken = async (code: string): Promise<GoogleUser | n
     })
 
     if (!response.ok) {
-      throw new Error("Failed to exchange code for token")
+      const errorData = await response.text()
+      console.error("Token exchange error:", errorData)
+      throw new Error(`Failed to exchange code for token: ${errorData}`)
     }
 
     const data = await response.json()
+    console.log("Token exchange successful")
     return data.user
   } catch (error) {
     console.error("Token exchange error:", error)
