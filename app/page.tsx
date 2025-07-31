@@ -101,7 +101,7 @@ export default function ComicVideoApp() {
             <p className="text-[#9cc2db] mb-8 text-lg opacity-90">Sign in to generate pretty ok videos</p>
             <SignInButton mode="modal">
               <Button className="w-full bg-gradient-to-r from-[#f5724c] to-[#e55a35] hover:from-[#e55a35] hover:to-[#d94d2a] text-white font-bold py-4 text-lg rounded-full border-2 border-white shadow-2xl transform hover:scale-105 transition-all duration-200 pulse-glow">
-                ✨ Sign In to Create Magic ✨
+                ✨ Sign In to Make Some Stuff✨
               </Button>
             </SignInButton>
           </CardContent>
@@ -234,11 +234,20 @@ export default function ComicVideoApp() {
   }
 
   const handleDownload = async () => {
-    if (!generatedVideo) return
+    console.log("Download button clicked!", generatedVideo)
+    if (!generatedVideo) {
+      console.log("No generated video available")
+      return
+    }
 
     try {
+      console.log("Fetching video from:", generatedVideo.url)
       const response = await fetch(generatedVideo.url)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const blob = await response.blob()
+      console.log("Blob created:", blob.size, "bytes")
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
@@ -247,6 +256,7 @@ export default function ComicVideoApp() {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
+      console.log("Download initiated successfully")
     } catch (err) {
       console.error("Download error:", err)
       setError("Failed to download video")
@@ -536,14 +546,15 @@ export default function ComicVideoApp() {
                           </div>
                         )}
                       </Button>
-                      {!prompt.trim() && (
-                        <p className="text-xs text-[#9cc2db] mt-1">
-                          {mode === "text"
-                            ? "Enter a prompt to enhance it with cinematic details"
-                            : "Enter a motion prompt to enhance it with camera movements"
-                          }
-                        </p>
-                      )}
+                    </motion.div>
+                    {!prompt.trim() && (
+                      <p className="text-xs text-[#9cc2db] mt-1">
+                        {mode === "text"
+                          ? "Enter a prompt to enhance it with cinematic details"
+                          : "Enter a motion prompt to enhance it with camera movements"
+                        }
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -713,15 +724,13 @@ export default function ComicVideoApp() {
                       </div>
                     </div>
                     <div className="flex gap-4">
-                      <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                        <Button
-                          onClick={handleDownload}
-                          className="w-full bg-gradient-to-r from-[#9cc2db] to-[#7ab3d3] hover:from-[#7ab3d3] hover:to-[#6ba3c7] text-[#2c3441] font-bold py-3 rounded-full border-2 border-white shadow-lg transition-all duration-200"
-                        >
-                          <Download className="w-5 h-5 mr-2" />
-                          Download Video
-                        </Button>
-                      </motion.div>
+                      <Button
+                        onClick={handleDownload}
+                        className="flex-1 bg-gradient-to-r from-[#9cc2db] to-[#7ab3d3] hover:from-[#7ab3d3] hover:to-[#6ba3c7] text-[#2c3441] font-bold py-3 rounded-full border-2 border-white shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95"
+                      >
+                        <Download className="w-5 h-5 mr-2" />
+                        Download Video
+                      </Button>
                     </div>
                     <p className="text-sm text-[#9cc2db] mt-4 text-center opacity-80">
                       💡 Note: We do not save created videos on our servers

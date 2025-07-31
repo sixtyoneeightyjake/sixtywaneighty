@@ -68,7 +68,7 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
     <div className="min-h-screen bg-[#39557a] flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-[#2c3441] border-4 border-[#9cc2db]">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-black text-[#f5724c]">sixtywaneighty</CardTitle>
+          <CardTitle className="text-3xl font-black text-[#f5724c]">sixtyoneeighty</CardTitle>
           <p className="text-[#9cc2db]">Login to generate videos</p>
         </CardHeader>
         <CardContent>

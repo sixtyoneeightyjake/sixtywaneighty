@@ -7,9 +7,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "sixtywaneighty - Professional Text-to-Video Generation",
-  description: "Create stunning 5-second videos from text descriptions using Wan 2.2 T2V Plus",
-  generator: 'v0.dev'
+  title: "sixtyoneeighty - Pretty decent AI Video Generation",
+  description: "Create pretty good 5-second videos from text descriptions with Mojo",
 }
 
 export default function RootLayout({
