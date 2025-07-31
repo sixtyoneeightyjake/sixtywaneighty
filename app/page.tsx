@@ -440,7 +440,7 @@ export default function ComicVideoApp() {
                     : "text-[#9cc2db] hover:text-white hover:bg-white/10"
                     }`}
                 >
-                  📝 Text-to-Video
+                  Text-to-Video
                 </motion.button>
                 <motion.button
                   onClick={() => setMode("image")}
@@ -451,7 +451,7 @@ export default function ComicVideoApp() {
                     : "text-[#9cc2db] hover:text-white hover:bg-white/10"
                     }`}
                 >
-                  🖼️ Image-to-Video
+                  Image-to-Video
                 </motion.button>
               </div>
 
@@ -532,7 +532,7 @@ export default function ComicVideoApp() {
                       <Button
                         onClick={handleEnhancePrompt}
                         disabled={!prompt.trim() || isEnhancing}
-                        className="bg-gradient-to-r from-[#9cc2db] to-[#7ab3d3] hover:from-[#7ab3d3] hover:to-[#6ba3c7] text-[#2c3441] font-bold border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all duration-200"
+                        className="bg-gradient-to-r from-[#f5724c] to-[#e55a35] hover:from-[#e55a35] hover:to-[#d94d2a] text-white font-bold border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all duration-200"
                       >
                         {isEnhancing ? (
                           <div className="flex items-center gap-2">
