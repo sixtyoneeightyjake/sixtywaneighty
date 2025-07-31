@@ -20,6 +20,30 @@ export async function POST(request: NextRequest) {
       apiKey: process.env.GEMINI_API_KEY,
     })
 
+    // Safety settings to allow creative content
+    const safetySettings = [
+      {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE",
+      },
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE",
+      },
+      {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_NONE",
+      },
+      {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_NONE",
+      },
+      {
+        category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+        threshold: "BLOCK_NONE",
+      },
+    ]
+
     // Different system instructions based on mode
     const systemInstructions = {
       text: `You are a prompt-enhancement engine for Wan2.2 T2V. Receive an input prompt and automatically expand it into a refined generation prompt under 120 words. Focus on cinematic structure: first describe the opening scene, then specify any camera movement (e.g. pan left, dolly in, tilt up), then the reveal or payoff. Use natural language, one action per shot, precise motion and aesthetic details. 
@@ -54,6 +78,7 @@ Output in this exact JSON format:
       systemInstruction: [{
         text: systemInstructions[mode as keyof typeof systemInstructions],
       }],
+      safetySettings: safetySettings,
     }
 
     const model = 'gemini-2.5-flash'
