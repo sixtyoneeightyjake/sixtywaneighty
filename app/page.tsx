@@ -445,7 +445,7 @@ export default function ComicVideoApp() {
 
               <p className="text-[#9cc2db] mb-4 sm:mb-6 font-medium text-sm sm:text-base">
                 {mode === "text"
-                  ? "Create Decent 5 second videos from your text descriptions"
+                  ? "Create decent 5 second videos from your text descriptions"
                   : "Transform your images into dynamic 5 second videos"
                 }
               </p>
