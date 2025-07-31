@@ -14,7 +14,7 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
   const sizeMap: Record<string, Record<string, string>> = {
     "480P": {
       "16:9": "832x480",
-      "9:16": "480x832", 
+      "9:16": "480x832",
       "1:1": "624x624",
       // Fallbacks for unsupported combinations
       "4:3": "832x480",
@@ -23,12 +23,12 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
     "1080P": {
       "16:9": "1920x1080",
       "9:16": "1080x1920",
-      "1:1": "1440x1440", 
+      "1:1": "1440x1440",
       "4:3": "1632x1248",
       "3:4": "1248x1632",
     },
   }
-  
+
   console.log("🔍 Available sizes for", resolution, ":", Object.keys(sizeMap[resolution] || {}))
 
   return sizeMap[resolution]?.[aspectRatio] || "1920x1080"
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       "480P": ["16:9", "9:16", "1:1"],
       "1080P": ["16:9", "9:16", "1:1", "4:3", "3:4"]
     }
-    
+
     if (!supportedCombinations[resolution]?.includes(aspectRatio)) {
       console.log(`⚠️ Unsupported combination: ${resolution} + ${aspectRatio}, using fallback`)
       // Use fallback for unsupported combinations
@@ -73,26 +73,25 @@ export async function POST(request: NextRequest) {
     console.log("📐 Using size:", size)
     console.log("📐 Size type:", typeof size)
     console.log("📐 Resolution:", resolution, "Aspect Ratio:", aspectRatio)
-    
+
     // Test with hardcoded known working size
     const testSize = "1920x1080" // Known working size from docs
     console.log("🧪 Testing with hardcoded size:", testSize)
 
-    // Step 1: Create the video generation task
+    // Step 1: Create the video generation task - minimal request
     const requestBody = {
-      model: "wan2.2-t2v-plus",
-      input: {
-        prompt: truncatedPrompt,
-        ...(truncatedNegativePrompt && { negative_prompt: truncatedNegativePrompt }),
+      "model": "wan2.2-t2v-plus",
+      "input": {
+        "prompt": truncatedPrompt
       },
-      parameters: {
-        size: testSize, // Use hardcoded test size
-        prompt_extend: true,
-        watermark: false,
-      },
+      "parameters": {
+        "size": "1920x1080"
+      }
     }
 
     console.log("📤 Sending to WAN API:", JSON.stringify(requestBody, null, 2))
+    console.log("🔑 API Key (first 20 chars):", process.env.ALI_MODEL_STUDIO_API_KEY?.substring(0, 20))
+    console.log("🌐 Endpoint:", "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis")
 
     const createTaskResponse = await fetch(
       "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis",
