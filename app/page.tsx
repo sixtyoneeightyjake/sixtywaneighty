@@ -98,10 +98,10 @@ export default function ComicVideoApp() {
                 sixtyoneeighty
               </div>
             </div>
-            <p className="text-[#9cc2db] mb-8 text-lg opacity-90">Sign in to generate pretty ok videos</p>
+
             <SignInButton mode="modal">
               <Button className="w-full bg-gradient-to-r from-[#f5724c] to-[#e55a35] hover:from-[#e55a35] hover:to-[#d94d2a] text-white font-bold py-4 text-lg rounded-full border-2 border-white shadow-2xl transform hover:scale-105 transition-all duration-200 pulse-glow">
-                ✨ Sign In to Make Some Stuff✨
+                Sign In to Make Some Pretty OK Videos
               </Button>
             </SignInButton>
           </CardContent>
