@@ -43,6 +43,7 @@ export default function ComicVideoApp() {
   // Image-to-Video mode state
   const [mode, setMode] = useState<"text" | "image">("text")
   const [imageUrl, setImageUrl] = useState("")
+  const [imagePreviewError, setImagePreviewError] = useState(false)
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -246,7 +247,10 @@ export default function ComicVideoApp() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: prompt.trim() }),
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          mode: mode
+        }),
       })
 
       if (!response.ok) {
@@ -377,8 +381,8 @@ export default function ComicVideoApp() {
                 <button
                   onClick={() => setMode("text")}
                   className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "text"
-                      ? "bg-[#f5724c] text-white"
-                      : "text-[#9cc2db] hover:text-white"
+                    ? "bg-[#f5724c] text-white"
+                    : "text-[#9cc2db] hover:text-white"
                     }`}
                 >
                   📝 Text-to-Video
@@ -386,8 +390,8 @@ export default function ComicVideoApp() {
                 <button
                   onClick={() => setMode("image")}
                   className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "image"
-                      ? "bg-[#f5724c] text-white"
-                      : "text-[#9cc2db] hover:text-white"
+                    ? "bg-[#f5724c] text-white"
+                    : "text-[#9cc2db] hover:text-white"
                     }`}
                 >
                   🖼️ Image-to-Video
@@ -408,23 +412,48 @@ export default function ComicVideoApp() {
                     <Label htmlFor="imageUrl" className="text-[#f5724c] font-bold text-lg mb-2 block">
                       Image URL *
                     </Label>
-                    <Input
-                      id="imageUrl"
-                      placeholder="https://example.com/your-image.jpg"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      className="bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
-                    />
-                    <p className="text-xs text-[#9cc2db] mt-1">
-                      Must be publicly accessible. Supports JPEG, PNG, BMP, WEBP. Max 10MB, 360-2000px.
-                    </p>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <Input
+                          id="imageUrl"
+                          placeholder="https://example.com/your-image.jpg"
+                          value={imageUrl}
+                          onChange={(e) => {
+                            setImageUrl(e.target.value)
+                            setImagePreviewError(false)
+                          }}
+                          className="bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
+                        />
+                        <p className="text-xs text-[#9cc2db] mt-1">
+                          Must be publicly accessible. Supports JPEG, PNG, BMP, WEBP. Max 10MB, 360-2000px.
+                        </p>
+                      </div>
+                      {/* Image Preview */}
+                      {imageUrl && (
+                        <div className="w-24 h-24 border-2 border-[#9cc2db] rounded-lg overflow-hidden bg-[#39557a] flex items-center justify-center">
+                          {!imagePreviewError ? (
+                            <img
+                              src={imageUrl}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                              onError={() => setImagePreviewError(true)}
+                            />
+                          ) : (
+                            <div className="text-[#9cc2db] text-xs text-center p-2">
+                              <span className="block">❌</span>
+                              <span>Invalid URL</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
                 {/* Prompt */}
                 <div>
                   <Label htmlFor="prompt" className="text-[#f5724c] font-bold text-lg mb-2 block">
-                    {mode === "text" ? "Prompt *" : "Prompt (Optional)"}
+                    {mode === "text" ? "Prompt *" : "Prompt"}
                   </Label>
                   <Textarea
                     id="prompt"
@@ -440,8 +469,8 @@ export default function ComicVideoApp() {
                   />
                   <p className="text-xs text-[#9cc2db] mt-1">{prompt.length}/800 characters</p>
 
-                  {/* Enhance Prompt Button (Text mode only) */}
-                  {mode === "text" && (
+                  {/* Enhance Prompt Button */}
+                  {((mode === "text" && prompt.trim()) || (mode === "image" && prompt.trim())) && (
                     <div className="mt-3">
                       <Button
                         onClick={handleEnhancePrompt}

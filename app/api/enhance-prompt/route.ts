@@ -3,7 +3,7 @@ import { GoogleGenAI } from '@google/genai'
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt } = await request.json()
+    const { prompt, mode = "text" } = await request.json()
 
     if (!prompt?.trim()) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 })
@@ -11,14 +11,40 @@ export async function POST(request: NextRequest) {
 
     // Check if API key is configured
     if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ error: "Gemini API key not configured" }, { status: 500 })
+      return NextResponse.json({ error: "Prompt Enhancement might be broken" }, { status: 500 })
     }
 
-    console.log("🤖 Enhancing prompt with Gemini 2.5 Flash...")
+    console.log("Mojo is enhancing your prompt")
 
     const ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     })
+
+    // Different system instructions based on mode
+    const systemInstructions = {
+      text: `You are a prompt-enhancement engine for Wan2.2 T2V. Receive an input prompt and automatically expand it into a refined generation prompt under 120 words. Focus on cinematic structure: first describe the opening scene, then specify any camera movement (e.g. pan left, dolly in, tilt up), then the reveal or payoff. Use natural language, one action per shot, precise motion and aesthetic details. 
+
+Output in this exact JSON format:
+{
+  "enhancedPrompt": "your enhanced prompt here",
+  "negativePrompt": "bright colors, overexposed, static, blurred details, subtitles, worst quality, low quality, extra fingers, poorly drawn hands or faces"
+}`,
+      image: `You are a prompt enhancement assistant specialized in the Wan2.2 image-to-video model (wan2.2-i2v-plus). Your task is to take a user-supplied prompt and polish it into a cinematic, expressive version optimized for generating a 5-second silent video from a provided image and text.
+
+Guidelines:
+• Aim for 80–120 words.
+• Use clear, vivid visual language: describe the subject, scene, lighting, mood.
+• Specify motion cues tied to the image: e.g. "camera pans right," "slow-motion zoom," "tracking shot following," "orbital arc reveal."
+• Maintain or subtly enhance the image's existing content without overriding it.
+• Use prompt extension (prompt_extend=true) by default to enrich detail.
+• Avoid vague or keyword-stuffed phrases—speak naturally.
+
+Output in this exact JSON format:
+{
+  "enhancedPrompt": "your enhanced prompt here",
+  "negativePrompt": "bright colors, overexposed, static, blurred details, subtitles, worst quality, low quality, extra fingers, poorly drawn hands or faces"
+}`
+    }
 
     const config = {
       temperature: 1.4,
@@ -26,13 +52,7 @@ export async function POST(request: NextRequest) {
         thinkingBudget: 0,
       },
       systemInstruction: [{
-        text: `You are a prompt-enhancement engine for Wan2.2 T2V. Receive an input prompt and automatically expand it into a refined generation prompt under 120 words. Focus on cinematic structure: first describe the opening scene, then specify any camera movement (e.g. pan left, dolly in, tilt up), then the reveal or payoff. Use natural language, one action per shot, precise motion and aesthetic details. 
-
-Output in this exact JSON format:
-{
-  "enhancedPrompt": "your enhanced prompt here",
-  "negativePrompt": "bright colors, overexposed, static, blurred details, subtitles, worst quality, low quality, extra fingers, poorly drawn hands or faces"
-}`,
+        text: systemInstructions[mode as keyof typeof systemInstructions],
       }],
     }
 
