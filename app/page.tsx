@@ -145,7 +145,7 @@ export default function ComicVideoApp() {
   return (
     <div className="min-h-screen bg-[#39557a] relative overflow-hidden">
       {/* Comic halftone pattern background */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div
           className="w-full h-full"
           style={{
