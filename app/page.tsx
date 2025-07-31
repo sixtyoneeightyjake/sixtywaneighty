@@ -56,10 +56,20 @@ export default function ComicVideoApp() {
   // Show loading while checking authentication
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#39557a] flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#f5724c] mx-auto mb-4" />
-          <p className="text-[#9cc2db]">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#39557a] via-[#2c3441] to-[#39557a] flex items-center justify-center relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-[#f5724c]/20 to-[#e55a35]/20 rounded-full blur-3xl floating-animation" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-[#9cc2db]/20 to-[#7ab3d3]/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-3s' }} />
+
+        <div className="text-center relative z-10">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+            className="w-16 h-16 bg-gradient-to-r from-[#f5724c] to-[#e55a35] rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-2xl"
+          >
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          </motion.div>
+          <p className="text-white text-xl font-bold">Loading the magic...</p>
         </div>
       </div>
     )
@@ -68,19 +78,30 @@ export default function ComicVideoApp() {
   // Show sign in page if not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#39557a] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[#2c3441] border-4 border-[#9cc2db]">
-          <CardContent className="p-8 text-center">
-            <h1
-              className="text-4xl font-black text-[#f5724c] mb-4"
-              style={{ fontFamily: "Impact, Arial Black, sans-serif" }}
-            >
-              sixtyoneeighty
-            </h1>
-            <p className="text-[#9cc2db] mb-6">Sign in to generate pretty ok videos</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#39557a] via-[#2c3441] to-[#39557a] flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-[#f5724c]/20 to-[#e55a35]/20 rounded-full blur-3xl floating-animation" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-[#9cc2db]/20 to-[#7ab3d3]/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-3s' }} />
+
+        <Card className="w-full max-w-md premium-card relative z-10 transform hover:scale-105 transition-all duration-300">
+          <CardContent className="p-10 text-center">
+            <div className="relative mb-6">
+              <h1
+                className="text-5xl font-black text-gradient mb-2"
+                style={{ fontFamily: "Impact, Arial Black, sans-serif" }}
+              >
+                sixtyoneeighty
+              </h1>
+              <div className="absolute inset-0 text-5xl font-black blur-sm opacity-30 text-[#f5724c]"
+                style={{ fontFamily: "Impact, Arial Black, sans-serif" }}
+              >
+                sixtyoneeighty
+              </div>
+            </div>
+            <p className="text-[#9cc2db] mb-8 text-lg opacity-90">Sign in to generate pretty ok videos</p>
             <SignInButton mode="modal">
-              <Button className="w-full bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold py-3">
-                Sign In
+              <Button className="w-full bg-gradient-to-r from-[#f5724c] to-[#e55a35] hover:from-[#e55a35] hover:to-[#d94d2a] text-white font-bold py-4 text-lg rounded-full border-2 border-white shadow-2xl transform hover:scale-105 transition-all duration-200 pulse-glow">
+                ✨ Sign In to Create Magic ✨
               </Button>
             </SignInButton>
           </CardContent>
@@ -272,8 +293,8 @@ export default function ComicVideoApp() {
   }
 
   return (
-    <div className="min-h-screen bg-[#39557a] relative overflow-hidden">
-      {/* Comic halftone pattern background */}
+    <div className="min-h-screen bg-gradient-to-br from-[#39557a] via-[#2c3441] to-[#39557a] relative overflow-hidden">
+      {/* Enhanced background with multiple layers */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <div
           className="w-full h-full"
@@ -284,28 +305,35 @@ export default function ComicVideoApp() {
         />
       </div>
 
-      {/* User Header */}
+      {/* Animated gradient orbs */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-[#f5724c]/20 to-[#e55a35]/20 rounded-full blur-3xl floating-animation" />
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-[#9cc2db]/20 to-[#7ab3d3]/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-3s' }} />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-[#f5724c]/10 to-[#9cc2db]/10 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-1.5s' }} />
+
+      {/* Enhanced User Header */}
       <div className="relative z-10 p-4">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Avatar className="border-2 border-[#f5724c]">
+          <div className="flex items-center gap-4 glass-effect rounded-full px-6 py-3">
+            <Avatar className="border-3 border-[#f5724c] ring-2 ring-[#f5724c]/30">
               <AvatarImage src={user?.imageUrl || ""} />
-              <AvatarFallback className="bg-[#f5724c] text-white">
+              <AvatarFallback className="bg-gradient-to-br from-[#f5724c] to-[#e55a35] text-white">
                 {user?.fullName?.charAt(0) || <User className="w-4 h-4" />}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-white font-bold">{user?.fullName || "User"}</p>
-              <p className="text-[#9cc2db] text-sm">{user?.primaryEmailAddress?.emailAddress}</p>
+              <p className="text-white font-bold text-lg">{user?.fullName || "User"}</p>
+              <p className="text-[#9cc2db] text-sm opacity-80">{user?.primaryEmailAddress?.emailAddress}</p>
             </div>
           </div>
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: "border-2 border-[#9cc2db]"
-              }
-            }}
-          />
+          <div className="glass-effect rounded-full p-2">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "border-2 border-[#9cc2db] hover:border-[#f5724c] transition-colors"
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -345,30 +373,45 @@ export default function ComicVideoApp() {
       </AnimatePresence>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1
-            className="text-6xl md:text-8xl font-black text-[#f5724c] mb-2 tracking-wider transform -rotate-1"
-            style={{
-              fontFamily: "Impact, Arial Black, sans-serif",
-              textShadow: "4px 4px 0px #2c3441, 8px 8px 0px rgba(0,0,0,0.3)",
-            }}
-          >
-            sixtyoneeighty
-          </h1>
-          <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-wide">
+        {/* Enhanced Header */}
+        <div className="text-center mb-12 relative">
+          <div className="relative inline-block">
+            <h1
+              className="text-6xl md:text-8xl font-black text-gradient mb-2 tracking-wider transform -rotate-1 relative z-10"
+              style={{
+                fontFamily: "Impact, Arial Black, sans-serif",
+                textShadow: "4px 4px 0px #2c3441, 8px 8px 0px rgba(0,0,0,0.3)",
+              }}
+            >
+              sixtyoneeighty
+            </h1>
+            <div className="absolute inset-0 text-6xl md:text-8xl font-black tracking-wider transform -rotate-1 blur-sm opacity-30 text-[#f5724c]"
+              style={{
+                fontFamily: "Impact, Arial Black, sans-serif",
+              }}
+            >
+              sixtyoneeighty
+            </div>
+          </div>
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-6 tracking-wide opacity-90">
             NOT SO AWFUL VIDEO GENERATION
           </h2>
-          <div className="inline-block bg-[#f5724c] text-white px-6 py-2 rounded-full font-black text-sm border-4 border-white shadow-lg transform rotate-1">
-            POWERED BY MOJO
+          <div className="inline-block relative">
+            <div className="gradient-border pulse-glow">
+              <div className="gradient-border-inner px-8 py-3 rounded-full">
+                <span className="font-black text-sm text-white tracking-wider">
+                  ⚡ POWERED BY MOJO ⚡
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
           {/* Generate Video Panel */}
-          <Card className="bg-[#2c3441] border-4 border-[#9cc2db] shadow-2xl">
-            <CardContent className="p-6">
+          <Card className="premium-card shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
+            <CardContent className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-[#f5724c] rounded-full flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
@@ -377,25 +420,29 @@ export default function ComicVideoApp() {
               </div>
 
               {/* Mode Tabs */}
-              <div className="flex mb-6 bg-[#39557a] rounded-lg p-1 border-2 border-[#9cc2db]">
-                <button
+              <div className="flex mb-8 glass-effect rounded-xl p-2 border border-[#9cc2db]/30">
+                <motion.button
                   onClick={() => setMode("text")}
-                  className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "text"
-                    ? "bg-[#f5724c] text-white"
-                    : "text-[#9cc2db] hover:text-white"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`flex-1 py-3 px-6 rounded-lg font-bold text-base transition-all duration-300 ${mode === "text"
+                    ? "bg-gradient-to-r from-[#f5724c] to-[#e55a35] text-white shadow-lg"
+                    : "text-[#9cc2db] hover:text-white hover:bg-white/10"
                     }`}
                 >
                   📝 Text-to-Video
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => setMode("image")}
-                  className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "image"
-                    ? "bg-[#f5724c] text-white"
-                    : "text-[#9cc2db] hover:text-white"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`flex-1 py-3 px-6 rounded-lg font-bold text-base transition-all duration-300 ${mode === "image"
+                    ? "bg-gradient-to-r from-[#f5724c] to-[#e55a35] text-white shadow-lg"
+                    : "text-[#9cc2db] hover:text-white hover:bg-white/10"
                     }`}
                 >
                   🖼️ Image-to-Video
-                </button>
+                </motion.button>
               </div>
 
               <p className="text-[#9cc2db] mb-6 font-medium">
@@ -422,7 +469,7 @@ export default function ComicVideoApp() {
                             setImageUrl(e.target.value)
                             setImagePreviewError(false)
                           }}
-                          className="bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
+                          className="premium-input text-white placeholder:text-[#9cc2db] font-medium"
                         />
                         <p className="text-xs text-[#9cc2db] mt-1">
                           Must be publicly accessible. Supports JPEG, PNG, BMP, WEBP. Max 10MB, 360-2000px.
@@ -464,43 +511,44 @@ export default function ComicVideoApp() {
                     }
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="min-h-[100px] bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium resize-none focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
+                    className="min-h-[120px] premium-input text-white placeholder:text-[#9cc2db] font-medium resize-none"
                     maxLength={800}
                   />
                   <p className="text-xs text-[#9cc2db] mt-1">{prompt.length}/800 characters</p>
 
                   {/* Enhance Prompt Button - Available for both modes */}
-                  <div className="mt-3">
-                    <Button
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isEnhancing}
-                      className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isEnhancing ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Enhancing...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4" />
-                          ✨ Enhance Prompt
-                        </div>
+                  <div className="mt-4">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button
+                        onClick={handleEnhancePrompt}
+                        disabled={!prompt.trim() || isEnhancing}
+                        className="bg-gradient-to-r from-[#9cc2db] to-[#7ab3d3] hover:from-[#7ab3d3] hover:to-[#6ba3c7] text-[#2c3441] font-bold border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all duration-200"
+                      >
+                        {isEnhancing ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Enhancing...
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            ✨ Enhance Prompt
+                          </div>
+                        )}
+                      </Button>
+                      {!prompt.trim() && (
+                        <p className="text-xs text-[#9cc2db] mt-1">
+                          {mode === "text"
+                            ? "Enter a prompt to enhance it with cinematic details"
+                            : "Enter a motion prompt to enhance it with camera movements"
+                          }
+                        </p>
                       )}
-                    </Button>
-                    {!prompt.trim() && (
-                      <p className="text-xs text-[#9cc2db] mt-1">
-                        {mode === "text"
-                          ? "Enter a prompt to enhance it with cinematic details"
-                          : "Enter a motion prompt to enhance it with camera movements"
-                        }
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 {/* Advanced Settings */}
-                <div className="bg-[#39557a] p-4 rounded-lg border-2 border-[#9cc2db]">
+                <div className="glass-effect p-6 rounded-xl border border-[#9cc2db]/30">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-xl">⚙️</span>
                     <h4 className="text-[#f5724c] font-bold text-lg">ADVANCED SETTINGS</h4>
@@ -563,7 +611,7 @@ export default function ComicVideoApp() {
                       placeholder="What should NOT appear in your video?"
                       value={negativePrompt}
                       onChange={(e) => setNegativePrompt(e.target.value)}
-                      className="bg-[#2c3441] border-[#9cc2db] text-white placeholder:text-[#9cc2db]"
+                      className="premium-input text-white placeholder:text-[#9cc2db]"
                       maxLength={500}
                     />
                     <p className="text-xs text-[#9cc2db] mt-1">{negativePrompt.length}/500 characters</p>
@@ -578,7 +626,7 @@ export default function ComicVideoApp() {
                   <Button
                     onClick={handleGenerate}
                     disabled={!prompt.trim() || isGenerating}
-                    className="w-full bg-[#f5724c] hover:bg-[#e55a35] text-white font-black text-xl py-6 rounded-full border-4 border-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[#f5724c] to-[#e55a35] hover:from-[#e55a35] hover:to-[#d94d2a] text-white font-black text-xl py-8 rounded-full border-4 border-white shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 transition-all duration-200 pulse-glow"
                   >
                     {isGenerating ? (
                       <div className="flex items-center gap-3">
@@ -598,8 +646,8 @@ export default function ComicVideoApp() {
           </Card>
 
           {/* Generated Video Panel */}
-          <Card className="bg-[#2c3441] border-4 border-[#9cc2db] shadow-2xl">
-            <CardContent className="p-6">
+          <Card className="premium-card shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
+            <CardContent className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-[#9cc2db] rounded-full flex items-center justify-center">
                   <Clapperboard className="w-5 h-5 text-[#2c3441]" />
@@ -607,67 +655,85 @@ export default function ComicVideoApp() {
                 <h3 className="text-2xl font-black text-[#9cc2db] tracking-wide">GENERATED VIDEO</h3>
               </div>
 
-              <div className="border-4 border-dashed border-[#9cc2db] rounded-lg p-8 min-h-[400px] flex flex-col items-center justify-center bg-[#39557a]">
+              <div className="border-2 border-dashed border-[#9cc2db]/50 rounded-xl p-8 min-h-[450px] flex flex-col items-center justify-center glass-effect relative overflow-hidden">
                 {isGenerating ? (
-                  <div className="text-center">
+                  <div className="text-center relative">
                     <motion.div
                       animate={{ rotate: -360 }}
                       transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                      className="w-24 h-24 bg-[#f5724c] rounded-full flex items-center justify-center mb-4 border-4 border-white mx-auto"
+                      className="w-28 h-28 bg-gradient-to-r from-[#f5724c] to-[#e55a35] rounded-full flex items-center justify-center mb-6 border-4 border-white mx-auto shadow-2xl pulse-glow"
                     >
-                      <Loader2 className="w-12 h-12 text-white animate-spin" />
+                      <Loader2 className="w-14 h-14 text-white animate-spin" />
                     </motion.div>
-                    <p className="text-[#9cc2db] font-bold text-lg">Creating your masterpiece...</p>
-                    <p className="text-white text-sm mt-2">This usually takes 1-2 minutes</p>
-                    <div className="mt-4 w-full max-w-xs mx-auto">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[#f5724c] font-bold text-sm">Progress</span>
-                        <span className="text-[#f5724c] font-bold text-sm">{generationProgress}%</span>
+                    <p className="text-white font-bold text-xl mb-2">Creating your masterpiece...</p>
+                    <p className="text-[#9cc2db] text-base opacity-80">This usually takes 1-2 minutes</p>
+                    <div className="mt-6 w-full max-w-sm mx-auto">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[#f5724c] font-bold text-base">Progress</span>
+                        <span className="text-[#f5724c] font-bold text-base">{generationProgress}%</span>
                       </div>
-                      <div className="w-full bg-[#2c3441] rounded-full h-3 border-2 border-[#f5724c]">
+                      <div className="w-full bg-[#2c3441] rounded-full h-4 border-2 border-[#f5724c] shadow-inner">
                         <motion.div
-                          className="bg-gradient-to-r from-[#f5724c] to-[#e55a35] h-full rounded-full flex items-center justify-end pr-1"
+                          className="bg-gradient-to-r from-[#f5724c] via-[#e55a35] to-[#d94d2a] h-full rounded-full flex items-center justify-end pr-2 shadow-lg"
                           initial={{ width: "0%" }}
                           animate={{ width: `${generationProgress}%` }}
                           transition={{ duration: 0.5, ease: "easeOut" }}
                         >
                           {generationProgress > 15 && (
-                            <span className="text-white text-xs font-bold">💥</span>
+                            <motion.span
+                              className="text-white text-sm font-bold"
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY }}
+                            >
+                              💥
+                            </motion.span>
                           )}
                         </motion.div>
                       </div>
                     </div>
                   </div>
                 ) : generatedVideo ? (
-                  <div className="w-full">
-                    <video
-                      controls
-                      className="w-full rounded-lg border-4 border-white shadow-lg mb-4"
-                      poster="/placeholder.svg?height=300&width=400&text=Generated+Video"
-                    >
-                      <source src={generatedVideo.url} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                    <div className="flex gap-4">
-                      <Button
-                        onClick={handleDownload}
-                        className="flex-1 bg-[#9cc2db] hover:bg-[#7ab3d3] text-[#2c3441] font-bold"
+                  <motion.div
+                    className="w-full"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="relative mb-6">
+                      <video
+                        controls
+                        className="w-full rounded-xl border-4 border-white shadow-2xl"
+                        poster="/placeholder.svg?height=300&width=400&text=Generated+Video"
                       >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Video
-                      </Button>
+                        <source src={generatedVideo.url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                      <div className="absolute -top-2 -right-2 bg-gradient-to-r from-[#f5724c] to-[#e55a35] text-white px-3 py-1 rounded-full text-sm font-bold border-2 border-white shadow-lg">
+                        ✨ Ready!
+                      </div>
                     </div>
-                    <p className="text-xs text-[#9cc2db] mt-2 text-center">
-                      Note: We do not save created videos on our servers
+                    <div className="flex gap-4">
+                      <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button
+                          onClick={handleDownload}
+                          className="w-full bg-gradient-to-r from-[#9cc2db] to-[#7ab3d3] hover:from-[#7ab3d3] hover:to-[#6ba3c7] text-[#2c3441] font-bold py-3 rounded-full border-2 border-white shadow-lg transition-all duration-200"
+                        >
+                          <Download className="w-5 h-5 mr-2" />
+                          Download Video
+                        </Button>
+                      </motion.div>
+                    </div>
+                    <p className="text-sm text-[#9cc2db] mt-4 text-center opacity-80">
+                      💡 Note: We do not save created videos on our servers
                     </p>
-                  </div>
+                  </motion.div>
                 ) : (
                   <div className="text-center">
-                    <div className="w-24 h-24 bg-[#9cc2db] rounded-lg flex items-center justify-center mb-4 border-4 border-white mx-auto">
-                      <Clapperboard className="w-12 h-12 text-[#2c3441]" />
+                    <div className="w-32 h-32 bg-gradient-to-br from-[#9cc2db] to-[#7ab3d3] rounded-2xl flex items-center justify-center mb-6 border-4 border-white mx-auto shadow-2xl floating-animation">
+                      <Clapperboard className="w-16 h-16 text-[#2c3441]" />
                     </div>
-                    <h4 className="text-[#9cc2db] font-bold text-xl mb-2">Your AI-generated video will appear here</h4>
-                    <p className="text-white">Enter a prompt and click generate to start</p>
+                    <h4 className="text-white font-bold text-2xl mb-3">Your AI-generated video will appear here</h4>
+                    <p className="text-[#9cc2db] text-lg opacity-80">Enter a prompt and click generate to start creating magic</p>
                   </div>
                 )}
               </div>

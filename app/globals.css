@@ -68,7 +68,7 @@
   }
 }
 
-/* Comic book styling */
+/* Comic book styling with premium touches */
 .comic-border {
   border: 4px solid #9cc2db;
   border-radius: 12px;
@@ -96,4 +96,71 @@
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+/* Premium enhancements */
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(44, 52, 65, 0.8);
+  border: 1px solid rgba(156, 194, 219, 0.3);
+}
+
+.gradient-border {
+  background: linear-gradient(135deg, #f5724c, #e55a35);
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.gradient-border-inner {
+  background: #2c3441;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.floating-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { box-shadow: 0 0 20px rgba(245, 114, 76, 0.5); }
+  to { box-shadow: 0 0 30px rgba(245, 114, 76, 0.8); }
+}
+
+.premium-card {
+  background: linear-gradient(135deg, rgba(44, 52, 65, 0.95) 0%, rgba(57, 85, 122, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(156, 194, 219, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.premium-input {
+  background: rgba(57, 85, 122, 0.6);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(156, 194, 219, 0.4);
+  transition: all 0.3s ease;
+}
+
+.premium-input:focus {
+  border-color: #f5724c;
+  box-shadow: 0 0 0 3px rgba(245, 114, 76, 0.2);
+  background: rgba(57, 85, 122, 0.8);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #f5724c, #e55a35, #d94d2a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
