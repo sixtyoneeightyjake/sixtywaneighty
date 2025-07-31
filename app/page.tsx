@@ -320,21 +320,9 @@ export default function ComicVideoApp() {
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-[#9cc2db]/20 to-[#7ab3d3]/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-3s' }} />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-[#f5724c]/10 to-[#9cc2db]/10 rounded-full blur-3xl floating-animation" style={{ animationDelay: '-1.5s' }} />
 
-      {/* Enhanced User Header */}
+      {/* User Header */}
       <div className="relative z-10 p-4">
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 sm:gap-4 glass-effect rounded-full px-3 sm:px-6 py-2 sm:py-3">
-            <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border-2 sm:border-3 border-[#f5724c] ring-1 sm:ring-2 ring-[#f5724c]/30">
-              <AvatarImage src={user?.imageUrl || ""} />
-              <AvatarFallback className="bg-gradient-to-br from-[#f5724c] to-[#e55a35] text-white text-xs sm:text-sm">
-                {user?.fullName?.charAt(0) || <User className="w-3 h-3 sm:w-4 sm:h-4" />}
-              </AvatarFallback>
-            </Avatar>
-            <div className="hidden sm:block">
-              <p className="text-white font-bold text-sm sm:text-lg">{user?.fullName || "User"}</p>
-              <p className="text-[#9cc2db] text-xs sm:text-sm opacity-80 truncate max-w-[150px] sm:max-w-none">{user?.primaryEmailAddress?.emailAddress}</p>
-            </div>
-          </div>
+        <div className="flex justify-end max-w-7xl mx-auto">
           <div className="glass-effect rounded-full p-1 sm:p-2">
             <UserButton
               appearance={{
