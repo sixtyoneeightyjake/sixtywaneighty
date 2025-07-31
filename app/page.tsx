@@ -68,9 +68,9 @@ export default function ComicVideoApp() {
               className="text-4xl font-black text-[#f5724c] mb-4"
               style={{ fontFamily: "Impact, Arial Black, sans-serif" }}
             >
-              sixtywaneighty
+              sixtyoneeighty
             </h1>
-            <p className="text-[#9cc2db] mb-6">Sign in to generate amazing videos</p>
+            <p className="text-[#9cc2db] mb-6">Sign in to generate pretty ok videos</p>
             <SignInButton mode="modal">
               <Button className="w-full bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold py-3">
                 Sign In
@@ -329,13 +329,13 @@ export default function ComicVideoApp() {
               textShadow: "4px 4px 0px #2c3441, 8px 8px 0px rgba(0,0,0,0.3)",
             }}
           >
-            sixtywaneighty
+            sixtyoneeighty
           </h1>
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-wide">
             PROFESSIONAL TEXT-TO-VIDEO GENERATION
           </h2>
           <div className="inline-block bg-[#f5724c] text-white px-6 py-2 rounded-full font-black text-sm border-4 border-white shadow-lg transform rotate-1">
-            POWERED BY WAN 2.2 T2V PLUS
+            POWERED BY MOJO
           </div>
         </div>
 
@@ -376,8 +376,7 @@ export default function ComicVideoApp() {
                     <Button
                       onClick={handleEnhancePrompt}
                       disabled={!prompt.trim() || isEnhancing}
-                      variant="outline"
-                      className="border-[#f5724c] text-[#f5724c] hover:bg-[#f5724c] hover:text-white bg-transparent"
+                      className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white"
                     >
                       {isEnhancing ? (
                         <div className="flex items-center gap-2">
@@ -480,7 +479,7 @@ export default function ComicVideoApp() {
                     ) : (
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">💥</span>
-                        BAM! GENERATE VIDEO
+                        BAM! GENERATE THIS SHIT
                       </div>
                     )}
                   </Button>
