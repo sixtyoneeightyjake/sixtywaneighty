@@ -13,25 +13,25 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
   // Use exact values from WAN 2.2 API documentation
   const sizeMap: Record<string, Record<string, string>> = {
     "480P": {
-      "16:9": "832x480",
-      "9:16": "480x832",
-      "1:1": "624x624",
+      "16:9": "832*480",
+      "9:16": "480*832",
+      "1:1": "624*624",
       // Fallbacks for unsupported combinations
-      "4:3": "832x480",
-      "3:4": "480x832",
+      "4:3": "832*480",
+      "3:4": "480*832",
     },
     "1080P": {
-      "16:9": "1920x1080",
-      "9:16": "1080x1920",
-      "1:1": "1440x1440",
-      "4:3": "1632x1248",
-      "3:4": "1248x1632",
+      "16:9": "1920*1080",
+      "9:16": "1080*1920",
+      "1:1": "1440*1440",
+      "4:3": "1632*1248",
+      "3:4": "1248*1632",
     },
   }
 
   console.log("🔍 Available sizes for", resolution, ":", Object.keys(sizeMap[resolution] || {}))
 
-  return sizeMap[resolution]?.[aspectRatio] || "1920x1080"
+  return sizeMap[resolution]?.[aspectRatio] || "1920*1080"
 }
 
 export async function POST(request: NextRequest) {
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     console.log("📐 Resolution:", resolution, "Aspect Ratio:", aspectRatio)
 
     // Test with hardcoded known working size
-    const testSize = "1920x1080" // Known working size from docs
+    const testSize = "1920*1080" // Known working size from docs - using * not x!
     console.log("🧪 Testing with hardcoded size:", testSize)
 
     // Step 1: Create the video generation task - minimal request
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         "prompt": truncatedPrompt
       },
       "parameters": {
-        "size": "1920x1080"
+        "size": "1920*1080"
       }
     }
 
