@@ -10,14 +10,15 @@ interface VideoGenerationRequest {
 
 // Map UI selections to exact pixel dimensions per WAN 2.2 spec
 function getVideoSize(resolution: string, aspectRatio: string): string {
+  // Use exact values from WAN 2.2 API documentation
   const sizeMap: Record<string, Record<string, string>> = {
     "480P": {
       "16:9": "832x480",
       "9:16": "480x832", 
       "1:1": "624x624",
-      // 4:3 and 3:4 not officially supported in 480P, use closest supported size
-      "4:3": "832x480", // Use 16:9 as closest
-      "3:4": "480x832", // Use 9:16 as closest
+      // Fallbacks for unsupported combinations
+      "4:3": "832x480",
+      "3:4": "480x832",
     },
     "1080P": {
       "16:9": "1920x1080",
@@ -27,6 +28,8 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
       "3:4": "1248x1632",
     },
   }
+  
+  console.log("🔍 Available sizes for", resolution, ":", Object.keys(sizeMap[resolution] || {}))
 
   return sizeMap[resolution]?.[aspectRatio] || "1920x1080"
 }
@@ -70,6 +73,10 @@ export async function POST(request: NextRequest) {
     console.log("📐 Using size:", size)
     console.log("📐 Size type:", typeof size)
     console.log("📐 Resolution:", resolution, "Aspect Ratio:", aspectRatio)
+    
+    // Test with hardcoded known working size
+    const testSize = "1920x1080" // Known working size from docs
+    console.log("🧪 Testing with hardcoded size:", testSize)
 
     // Step 1: Create the video generation task
     const requestBody = {
@@ -79,7 +86,7 @@ export async function POST(request: NextRequest) {
         ...(truncatedNegativePrompt && { negative_prompt: truncatedNegativePrompt }),
       },
       parameters: {
-        size: size,
+        size: testSize, // Use hardcoded test size
         prompt_extend: true,
         watermark: false,
       },
