@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     const createTaskData = await createTaskResponse.json()
-    console.log("📋 Task Created:", createTaskData)
+    console.log("📋 Task Created:", JSON.stringify(createTaskData, null, 2))
 
     const taskId = createTaskData.output?.task_id
     const resultUrl = createTaskData.output?.result_url

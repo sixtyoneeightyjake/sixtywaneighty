@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     const status = statusData.output?.task_status
     
     console.log(`🔍 Poll status for ${taskId}:`, status)
+    console.log(`📋 Full response:`, JSON.stringify(statusData, null, 2))
 
     // Check for success with video URL
     if (status === "SUCCEEDED" && statusData.output?.video_url) {
@@ -38,11 +39,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check for failure
+    // Check for failure with detailed error
     if (status === "FAILED") {
+      const errorMessage = statusData.output?.message || statusData.message || "Video generation failed"
+      console.error(`❌ Video generation failed for ${taskId}:`, errorMessage)
       return NextResponse.json({
         status: "FAILED",
-        error: "Video generation failed"
+        error: errorMessage
       })
     }
 

@@ -123,7 +123,7 @@ export default function ComicVideoApp() {
         }
 
         if (data.status === "FAILED") {
-          setError("Video generation failed")
+          setError(data.error || "Video generation failed")
           setIsGenerating(false)
           setGenerationProgress(0)
           return
