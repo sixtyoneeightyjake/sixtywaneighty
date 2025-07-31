@@ -69,7 +69,7 @@ export default function ComicVideoApp() {
           >
             <Loader2 className="w-8 h-8 text-white animate-spin" />
           </motion.div>
-          <p className="text-white text-xl font-bold">Loading the magic...</p>
+          <p className="text-white text-xl font-bold">Loading that good shit...</p>
         </div>
       </div>
     )
@@ -742,7 +742,7 @@ export default function ComicVideoApp() {
                       <Clapperboard className="w-16 h-16 text-[#2c3441]" />
                     </div>
                     <h4 className="text-white font-bold text-2xl mb-3">Your AI-generated video will appear here</h4>
-                    <p className="text-[#9cc2db] text-lg opacity-80">Enter a prompt and click generate to start creating magic</p>
+                    <p className="text-[#9cc2db] text-lg opacity-80">Enter a prompt and click generate to start creating them vidz</p>
                   </div>
                 )}
               </div>
