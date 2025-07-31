@@ -22,13 +22,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the correct redirect URI - use NEXTAUTH_URL if available
+    const host = request.headers.get("host") || "localhost:3000"
+    const protocol = host.includes("localhost") ? "http" : "https"
     const redirectUri = process.env.NEXTAUTH_URL
       ? `${process.env.NEXTAUTH_URL}/auth/callback`
-      : (() => {
-        const host = request.headers.get("host") || "localhost:3000"
-        const protocol = host.includes("localhost") ? "http" : "https"
-        return `${protocol}://${host}/auth/callback`
-      })()
+      : `${protocol}://${host}/auth/callback`
 
     console.log("🔄 Token exchange details:")
     console.log("   Host:", host)
