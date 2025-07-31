@@ -442,17 +442,17 @@ export default function ComicVideoApp() {
 
               <div className="border-4 border-dashed border-[#9cc2db] rounded-lg p-8 min-h-[400px] flex flex-col items-center justify-center bg-[#39557a]">
                 {isGenerating ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                    className="text-center"
-                  >
-                    <div className="w-24 h-24 bg-[#f5724c] rounded-full flex items-center justify-center mb-4 border-4 border-white">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                      className="w-24 h-24 bg-[#f5724c] rounded-full flex items-center justify-center mb-4 border-4 border-white mx-auto"
+                    >
                       <Loader2 className="w-12 h-12 text-white animate-spin" />
-                    </div>
+                    </motion.div>
                     <p className="text-[#9cc2db] font-bold text-lg">Creating your masterpiece...</p>
                     <p className="text-white text-sm mt-2">This usually takes 1-2 minutes</p>
-                    <div className="mt-4 w-full max-w-xs">
+                    <div className="mt-4 w-full max-w-xs mx-auto">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[#f5724c] font-bold text-sm">Progress</span>
                         <span className="text-[#f5724c] font-bold text-sm">{generationProgress}%</span>
@@ -470,7 +470,7 @@ export default function ComicVideoApp() {
                         </motion.div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ) : generatedVideo ? (
                   <div className="w-full">
                     <video
@@ -496,7 +496,7 @@ export default function ComicVideoApp() {
                   </div>
                 ) : (
                   <div className="text-center">
-                    <div className="w-24 h-24 bg-[#9cc2db] rounded-lg flex items-center justify-center mb-4 border-4 border-white">
+                    <div className="w-24 h-24 bg-[#9cc2db] rounded-lg flex items-center justify-center mb-4 border-4 border-white mx-auto">
                       <Clapperboard className="w-12 h-12 text-[#2c3441]" />
                     </div>
                     <h4 className="text-[#9cc2db] font-bold text-xl mb-2">Your AI-generated video will appear here</h4>
