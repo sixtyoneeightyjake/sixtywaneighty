@@ -15,8 +15,9 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
       "16:9": "832x480",
       "9:16": "480x832",
       "1:1": "624x624",
-      "4:3": "624x480",
-      "3:4": "480x624",
+      // 4:3 and 3:4 not supported in 480P per docs, fallback to 1:1
+      "4:3": "624x624",
+      "3:4": "624x624",
     },
     "1080P": {
       "16:9": "1920x1080",
@@ -101,51 +102,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No task ID or result URL received from API" }, { status: 500 })
     }
 
-    // Step 2: Poll for completion
-    let attempts = 0
-    const maxAttempts = 40 // 2 minutes max (3 second intervals)
-    const pollUrl = resultUrl || `https://dashscope-intl.aliyuncs.com/api/v1/tasks/${taskId}`
-
-    console.log("🔄 Starting to poll:", pollUrl)
-
-    while (attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 3000)) // Wait 3 seconds as per spec
-
-      const statusResponse = await fetch(pollUrl, {
-        headers: {
-          Authorization: `Bearer ${process.env.ALI_MODEL_STUDIO_API_KEY}`,
-        },
-      })
-
-      if (!statusResponse.ok) {
-        console.log(`⚠️ Poll attempt ${attempts + 1} failed, retrying...`)
-        attempts++
-        continue
-      }
-
-      const statusData = await statusResponse.json()
-      console.log(`🔍 Poll attempt ${attempts + 1}:`, statusData.output?.task_status)
-
-      // Check for success with video URL
-      if (statusData.output?.task_status === "SUCCEEDED" && statusData.output?.video_url) {
-        console.log("✅ Video generation succeeded!")
-        return NextResponse.json({
-          url: statusData.output.video_url,
-          taskId: taskId || "unknown",
-        })
-      }
-
-      // Check for failure
-      if (statusData.output?.task_status === "FAILED") {
-        console.error("❌ Video generation failed:", statusData)
-        return NextResponse.json({ error: "Video generation failed" }, { status: 500 })
-      }
-
-      attempts++
-    }
-
-    console.log("⏰ Video generation timed out after", maxAttempts, "attempts")
-    return NextResponse.json({ error: "Video generation timed out" }, { status: 408 })
+    // Return task ID immediately for client-side polling
+    console.log("✅ Task created, returning for client-side polling")
+    return NextResponse.json({
+      taskId: taskId || "unknown",
+      pollUrl: resultUrl,
+      status: "PENDING"
+    })
   } catch (error) {
     console.error("💥 Video generation error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

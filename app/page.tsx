@@ -30,11 +30,12 @@ export default function ComicVideoApp() {
   const [prompt, setPrompt] = useState("")
   const [negativePrompt, setNegativePrompt] = useState("")
   const [resolution, setResolution] = useState<"480P" | "1080P">("1080P")
-  const [aspectRatio, setAspectRatio] = useState<"4:3" | "16:9" | "1:1">("4:3")
+  const [aspectRatio, setAspectRatio] = useState<"4:3" | "16:9" | "1:1" | "9:16" | "3:4">("4:3")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedVideo, setGeneratedVideo] = useState<GeneratedVideo | null>(null)
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [generationProgress, setGenerationProgress] = useState(0)
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -80,6 +81,68 @@ export default function ComicVideoApp() {
     )
   }
 
+  const pollForVideo = async (taskId: string, pollUrl?: string) => {
+    const maxAttempts = 40 // 2 minutes max
+    let attempts = 0
+
+    const poll = async (): Promise<void> => {
+      if (attempts >= maxAttempts) {
+        setError("Video generation timed out")
+        setIsGenerating(false)
+        setGenerationProgress(0)
+        return
+      }
+
+      // Update progress based on attempts (0-95%, leaving 5% for final processing)
+      const progress = Math.min(95, Math.round((attempts / maxAttempts) * 100))
+      setGenerationProgress(progress)
+
+      try {
+        const response = await fetch("/api/poll-video", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskId, pollUrl }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to check video status")
+        }
+
+        const data = await response.json()
+        
+        if (data.status === "SUCCEEDED" && data.url) {
+          setGenerationProgress(100)
+          setGeneratedVideo({ url: data.url, taskId })
+          setShowSuccess(true)
+          setTimeout(() => setShowSuccess(false), 3000)
+          setIsGenerating(false)
+          setTimeout(() => setGenerationProgress(0), 1000) // Reset after a delay
+          return
+        }
+
+        if (data.status === "FAILED") {
+          setError("Video generation failed")
+          setIsGenerating(false)
+          setGenerationProgress(0)
+          return
+        }
+
+        // Still processing, poll again in 3 seconds
+        attempts++
+        setTimeout(poll, 3000)
+      } catch (err) {
+        console.error("Polling error:", err)
+        setError("Failed to check video status")
+        setIsGenerating(false)
+        setGenerationProgress(0)
+      }
+    }
+
+    poll()
+  }
+
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       setError("Please enter a prompt")
@@ -89,6 +152,7 @@ export default function ComicVideoApp() {
     setIsGenerating(true)
     setError(null)
     setGeneratedVideo(null)
+    setGenerationProgress(0)
 
     try {
       const response = await fetch("/api/generate-video", {
@@ -111,13 +175,16 @@ export default function ComicVideoApp() {
       }
 
       const data = await response.json()
-      setGeneratedVideo(data)
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 3000)
+      
+      if (data.taskId) {
+        // Start polling for completion
+        pollForVideo(data.taskId, data.pollUrl)
+      } else {
+        throw new Error("No task ID received")
+      }
     } catch (err) {
       console.error("Video generation error:", err)
       setError(err instanceof Error ? err.message : "Something went wrong!")
-    } finally {
       setIsGenerating(false)
     }
   }
@@ -278,7 +345,13 @@ export default function ComicVideoApp() {
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label className="text-[#f5724c] font-bold mb-2 block">Resolution</Label>
-                      <Select value={resolution} onValueChange={(value: "480P" | "1080P") => setResolution(value)}>
+                      <Select value={resolution} onValueChange={(value: "480P" | "1080P") => {
+                        setResolution(value)
+                        // Auto-switch to supported aspect ratio for 480P
+                        if (value === "480P" && aspectRatio === "3:4") {
+                          setAspectRatio("1:1")
+                        }
+                      }}>
                         <SelectTrigger className="bg-[#2c3441] border-[#9cc2db] text-white">
                           <SelectValue />
                         </SelectTrigger>
@@ -293,15 +366,22 @@ export default function ComicVideoApp() {
                       <Label className="text-[#f5724c] font-bold mb-2 block">Aspect Ratio</Label>
                       <Select
                         value={aspectRatio}
-                        onValueChange={(value: "4:3" | "16:9" | "1:1") => setAspectRatio(value)}
+                        onValueChange={(value: "4:3" | "16:9" | "1:1" | "9:16" | "3:4") => setAspectRatio(value)}
                       >
                         <SelectTrigger className="bg-[#2c3441] border-[#9cc2db] text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="4:3">4:3 (Default)</SelectItem>
                           <SelectItem value="16:9">16:9 (Widescreen)</SelectItem>
+                          <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
                           <SelectItem value="1:1">1:1 (Square)</SelectItem>
+                          <SelectItem value="4:3">4:3 (Default)</SelectItem>
+                          <SelectItem 
+                            value="3:4" 
+                            disabled={resolution === "480P"}
+                          >
+                            3:4 (Portrait) {resolution === "480P" && "(1080P only)"}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -372,6 +452,24 @@ export default function ComicVideoApp() {
                     </div>
                     <p className="text-[#9cc2db] font-bold text-lg">Creating your masterpiece...</p>
                     <p className="text-white text-sm mt-2">This usually takes 1-2 minutes</p>
+                    <div className="mt-4 w-full max-w-xs">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[#f5724c] font-bold text-sm">Progress</span>
+                        <span className="text-[#f5724c] font-bold text-sm">{generationProgress}%</span>
+                      </div>
+                      <div className="w-full bg-[#2c3441] rounded-full h-3 border-2 border-[#f5724c]">
+                        <motion.div
+                          className="bg-gradient-to-r from-[#f5724c] to-[#e55a35] h-full rounded-full flex items-center justify-end pr-1"
+                          initial={{ width: "0%" }}
+                          animate={{ width: `${generationProgress}%` }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          {generationProgress > 15 && (
+                            <span className="text-white text-xs font-bold">💥</span>
+                          )}
+                        </motion.div>
+                      </div>
+                    </div>
                   </motion.div>
                 ) : generatedVideo ? (
                   <div className="w-full">
