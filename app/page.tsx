@@ -469,28 +469,34 @@ export default function ComicVideoApp() {
                   />
                   <p className="text-xs text-[#9cc2db] mt-1">{prompt.length}/800 characters</p>
 
-                  {/* Enhance Prompt Button */}
-                  {((mode === "text" && prompt.trim()) || (mode === "image" && prompt.trim())) && (
-                    <div className="mt-3">
-                      <Button
-                        onClick={handleEnhancePrompt}
-                        disabled={!prompt.trim() || isEnhancing}
-                        className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white"
-                      >
-                        {isEnhancing ? (
-                          <div className="flex items-center gap-2">
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Enhancing...
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4" />
-                            ✨ Enhance Prompt
-                          </div>
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                  {/* Enhance Prompt Button - Available for both modes */}
+                  <div className="mt-3">
+                    <Button
+                      onClick={handleEnhancePrompt}
+                      disabled={!prompt.trim() || isEnhancing}
+                      className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isEnhancing ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Enhancing...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4" />
+                          ✨ Enhance Prompt
+                        </div>
+                      )}
+                    </Button>
+                    {!prompt.trim() && (
+                      <p className="text-xs text-[#9cc2db] mt-1">
+                        {mode === "text"
+                          ? "Enter a prompt to enhance it with cinematic details"
+                          : "Enter a motion prompt to enhance it with camera movements"
+                        }
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Advanced Settings */}
