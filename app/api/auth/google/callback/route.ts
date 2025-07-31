@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "OAuth configuration error - missing credentials" }, { status: 500 })
     }
 
-    // Get the correct redirect URI - FIX THE TYPO HERE!
+    // Get the correct redirect URI
     const host = request.headers.get("host") || "localhost:3000"
-    const protocol = host.includes("localhost") ? "http" : "https" // Fixed: was "httos"
+    const protocol = host.includes("localhost") ? "http" : "https"
     const redirectUri = `${protocol}://${host}/auth/callback`
 
     console.log("🔄 Token exchange details:")
