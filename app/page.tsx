@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@/hooks/use-google-auth"
+import { useUser, SignInButton, UserButton } from '@clerk/nextjs'
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,9 +9,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Clapperboard, Download, Loader2, Sparkles, Zap, LogOut, User } from "lucide-react"
+import { Clapperboard, Download, Loader2, Sparkles, Zap, User } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import Link from "next/link"
 
 interface VideoGenerationRequest {
   prompt: string
@@ -27,7 +26,7 @@ interface GeneratedVideo {
 }
 
 export default function ComicVideoApp() {
-  const { user, loading, signOut } = useAuth()
+  const { user, isLoaded } = useUser()
   const [prompt, setPrompt] = useState("")
   const [negativePrompt, setNegativePrompt] = useState("")
   const [resolution, setResolution] = useState<"480P" | "1080P">("1080P")
@@ -46,7 +45,7 @@ export default function ComicVideoApp() {
   }, [error])
 
   // Show loading while checking authentication
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-[#39557a] flex items-center justify-center">
         <div className="text-center">
@@ -69,12 +68,12 @@ export default function ComicVideoApp() {
             >
               sixtywaneighty
             </h1>
-            <p className="text-[#9cc2db] mb-6">Sign in with Google to generate amazing videos</p>
-            <Link href="/auth/signin">
+            <p className="text-[#9cc2db] mb-6">Sign in to generate amazing videos</p>
+            <SignInButton mode="modal">
               <Button className="w-full bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold py-3">
-                Sign In with Google
+                Sign In
               </Button>
-            </Link>
+            </SignInButton>
           </CardContent>
         </Card>
       </div>
@@ -161,24 +160,23 @@ export default function ComicVideoApp() {
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <Avatar className="border-2 border-[#f5724c]">
-              <AvatarImage src={user?.picture || ""} />
+              <AvatarImage src={user?.imageUrl || ""} />
               <AvatarFallback className="bg-[#f5724c] text-white">
-                {user?.name?.charAt(0) || <User className="w-4 h-4" />}
+                {user?.fullName?.charAt(0) || <User className="w-4 h-4" />}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-white font-bold">{user?.name || "User"}</p>
-              <p className="text-[#9cc2db] text-sm">{user?.email}</p>
+              <p className="text-white font-bold">{user?.fullName || "User"}</p>
+              <p className="text-[#9cc2db] text-sm">{user?.primaryEmailAddress?.emailAddress}</p>
             </div>
           </div>
-          <Button
-            onClick={signOut}
-            variant="outline"
-            className="border-[#9cc2db] text-[#9cc2db] hover:bg-[#9cc2db] hover:text-[#2c3441] bg-transparent"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <UserButton 
+            appearance={{
+              elements: {
+                avatarBox: "border-2 border-[#9cc2db]"
+              }
+            }}
+          />
         </div>
       </div>
 
