@@ -36,6 +36,7 @@ export default function ComicVideoApp() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [generationProgress, setGenerationProgress] = useState(0)
+  const [isEnhancing, setIsEnhancing] = useState(false)
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -111,7 +112,7 @@ export default function ComicVideoApp() {
         }
 
         const data = await response.json()
-        
+
         if (data.status === "SUCCEEDED" && data.url) {
           setGenerationProgress(100)
           setGeneratedVideo({ url: data.url, taskId })
@@ -175,7 +176,7 @@ export default function ComicVideoApp() {
       }
 
       const data = await response.json()
-      
+
       if (data.taskId) {
         // Start polling for completion
         pollForVideo(data.taskId, data.pollUrl)
@@ -209,6 +210,42 @@ export default function ComicVideoApp() {
     }
   }
 
+  const handleEnhancePrompt = async () => {
+    if (!prompt.trim()) {
+      setError("Please enter a prompt first")
+      return
+    }
+
+    setIsEnhancing(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/enhance-prompt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to enhance prompt" }))
+        throw new Error(errorData.error || "Failed to enhance prompt")
+      }
+
+      const data = await response.json()
+      setPrompt(data.enhancedPrompt)
+      if (data.negativePrompt) {
+        setNegativePrompt(data.negativePrompt)
+      }
+    } catch (err) {
+      console.error("Prompt enhancement error:", err)
+      setError(err instanceof Error ? err.message : "Failed to enhance prompt")
+    } finally {
+      setIsEnhancing(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#39557a] relative overflow-hidden">
       {/* Comic halftone pattern background */}
@@ -237,7 +274,7 @@ export default function ComicVideoApp() {
               <p className="text-[#9cc2db] text-sm">{user?.primaryEmailAddress?.emailAddress}</p>
             </div>
           </div>
-          <UserButton 
+          <UserButton
             appearance={{
               elements: {
                 avatarBox: "border-2 border-[#9cc2db]"
@@ -333,6 +370,28 @@ export default function ComicVideoApp() {
                     maxLength={800}
                   />
                   <p className="text-xs text-[#9cc2db] mt-1">{prompt.length}/800 characters</p>
+
+                  {/* Enhance Prompt Button */}
+                  <div className="mt-3">
+                    <Button
+                      onClick={handleEnhancePrompt}
+                      disabled={!prompt.trim() || isEnhancing}
+                      variant="outline"
+                      className="border-[#f5724c] text-[#f5724c] hover:bg-[#f5724c] hover:text-white bg-transparent"
+                    >
+                      {isEnhancing ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Enhancing...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4" />
+                          ✨ Enhance Prompt
+                        </div>
+                      )}
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Advanced Settings */}
@@ -376,8 +435,8 @@ export default function ComicVideoApp() {
                           <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
                           <SelectItem value="1:1">1:1 (Square)</SelectItem>
                           <SelectItem value="4:3">4:3 (Default)</SelectItem>
-                          <SelectItem 
-                            value="3:4" 
+                          <SelectItem
+                            value="3:4"
                             disabled={resolution === "480P"}
                           >
                             3:4 (Portrait) {resolution === "480P" && "(1080P only)"}
