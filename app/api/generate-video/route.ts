@@ -13,16 +13,16 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
   const sizeMap: Record<string, Record<string, string>> = {
     "480P": {
       "16:9": "832x480",
-      "9:16": "480x832",
+      "9:16": "480x832", 
       "1:1": "624x624",
-      // 4:3 and 3:4 not supported in 480P per docs, fallback to 1:1
-      "4:3": "624x624",
-      "3:4": "624x624",
+      // 4:3 and 3:4 not officially supported in 480P, use closest supported size
+      "4:3": "832x480", // Use 16:9 as closest
+      "3:4": "480x832", // Use 9:16 as closest
     },
     "1080P": {
       "16:9": "1920x1080",
       "9:16": "1080x1920",
-      "1:1": "1440x1440",
+      "1:1": "1440x1440", 
       "4:3": "1632x1248",
       "3:4": "1248x1632",
     },
@@ -51,9 +51,25 @@ export async function POST(request: NextRequest) {
     const truncatedPrompt = prompt.trim().slice(0, 800)
     const truncatedNegativePrompt = negativePrompt?.trim().slice(0, 500)
 
+    // Validate supported combinations
+    const supportedCombinations = {
+      "480P": ["16:9", "9:16", "1:1"],
+      "1080P": ["16:9", "9:16", "1:1", "4:3", "3:4"]
+    }
+    
+    if (!supportedCombinations[resolution]?.includes(aspectRatio)) {
+      console.log(`⚠️ Unsupported combination: ${resolution} + ${aspectRatio}, using fallback`)
+      // Use fallback for unsupported combinations
+      if (resolution === "480P") {
+        aspectRatio = "1:1" // Safe fallback for 480P
+      }
+    }
+
     // Get exact pixel dimensions
     const size = getVideoSize(resolution, aspectRatio)
     console.log("📐 Using size:", size)
+    console.log("📐 Size type:", typeof size)
+    console.log("📐 Resolution:", resolution, "Aspect Ratio:", aspectRatio)
 
     // Step 1: Create the video generation task
     const requestBody = {
