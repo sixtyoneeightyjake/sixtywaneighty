@@ -1,10 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 interface VideoGenerationRequest {
-  prompt: string
+  mode: "text" | "image"
+  prompt?: string
   negativePrompt?: string
   resolution: "480P" | "1080P"
-  aspectRatio: "4:3" | "16:9" | "1:1" | "9:16" | "3:4"
+  aspectRatio?: "4:3" | "16:9" | "1:1" | "9:16" | "3:4" // Only for text mode
+  imageUrl?: string // Only for image mode
   userId?: string
 }
 
@@ -37,12 +39,17 @@ function getVideoSize(resolution: string, aspectRatio: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body: VideoGenerationRequest = await request.json()
-    const { prompt, negativePrompt, resolution, aspectRatio, userId } = body
+    const { mode, prompt, negativePrompt, resolution, aspectRatio, imageUrl, userId } = body
 
-    console.log("🎬 Video Generation Request:", { prompt, negativePrompt, resolution, aspectRatio, userId })
+    console.log("🎬 Video Generation Request:", { mode, prompt, negativePrompt, resolution, aspectRatio, imageUrl, userId })
 
-    if (!prompt?.trim()) {
-      return NextResponse.json({ error: "Prompt is required" }, { status: 400 })
+    // Validation based on mode
+    if (mode === "text" && !prompt?.trim()) {
+      return NextResponse.json({ error: "Prompt is required for text-to-video" }, { status: 400 })
+    }
+    
+    if (mode === "image" && !imageUrl?.trim()) {
+      return NextResponse.json({ error: "Image URL is required for image-to-video" }, { status: 400 })
     }
 
     // Check if API key is configured
@@ -50,42 +57,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "API key not configured" }, { status: 500 })
     }
 
-    // Truncate prompt to 800 chars as per WAN spec
-    const truncatedPrompt = prompt.trim().slice(0, 800)
+    // Truncate prompts as per API spec
+    const truncatedPrompt = prompt?.trim().slice(0, 800)
     const truncatedNegativePrompt = negativePrompt?.trim().slice(0, 500)
 
-    // Validate supported combinations
-    const supportedCombinations = {
-      "480P": ["16:9", "9:16", "1:1"],
-      "1080P": ["16:9", "9:16", "1:1", "4:3", "3:4"]
-    }
+    // Step 1: Create the video generation task
+    let requestBody: any
 
-    if (!supportedCombinations[resolution]?.includes(aspectRatio)) {
-      console.log(`⚠️ Unsupported combination: ${resolution} + ${aspectRatio}, using fallback`)
-      // Use fallback for unsupported combinations
-      if (resolution === "480P") {
-        aspectRatio = "1:1" // Safe fallback for 480P
+    if (mode === "text") {
+      // Validate supported combinations for text mode
+      const supportedCombinations = {
+        "480P": ["16:9", "9:16", "1:1"],
+        "1080P": ["16:9", "9:16", "1:1", "4:3", "3:4"]
       }
-    }
+      
+      let finalAspectRatio = aspectRatio
+      if (!supportedCombinations[resolution]?.includes(aspectRatio!)) {
+        console.log(`⚠️ Unsupported combination: ${resolution} + ${aspectRatio}, using fallback`)
+        finalAspectRatio = resolution === "480P" ? "1:1" : "16:9"
+      }
 
-    // Get exact pixel dimensions
-    const size = getVideoSize(resolution, aspectRatio)
-    console.log("📐 Using size:", size)
-    console.log("📐 Size type:", typeof size)
-    console.log("📐 Resolution:", resolution, "Aspect Ratio:", aspectRatio)
+      // Get exact pixel dimensions for text mode
+      const size = getVideoSize(resolution, finalAspectRatio!)
+      console.log("📐 Text mode - Using size:", size)
 
-    // Test with hardcoded known working size
-    const testSize = "1920*1080" // Known working size from docs - using * not x!
-    console.log("🧪 Testing with hardcoded size:", testSize)
+      requestBody = {
+        "model": "wan2.2-t2v-plus",
+        "input": {
+          "prompt": truncatedPrompt,
+          ...(truncatedNegativePrompt && { "negative_prompt": truncatedNegativePrompt }),
+        },
+        "parameters": {
+          "size": size,
+          "prompt_extend": true,
+          "watermark": false
+        }
+      }
+    } else {
+      // Image-to-video mode
+      console.log("🖼️ Image mode - Using resolution:", resolution)
 
-    // Step 1: Create the video generation task - minimal request
-    const requestBody = {
-      "model": "wan2.2-t2v-plus",
-      "input": {
-        "prompt": truncatedPrompt
-      },
-      "parameters": {
-        "size": "1920*1080"
+      requestBody = {
+        "model": "wan2.2-i2v-plus",
+        "input": {
+          "img_url": imageUrl,
+          ...(truncatedPrompt && { "prompt": truncatedPrompt }),
+          ...(truncatedNegativePrompt && { "negative_prompt": truncatedNegativePrompt }),
+        },
+        "parameters": {
+          "resolution": resolution,
+          "prompt_extend": true,
+          "watermark": false
+        }
       }
     }
 

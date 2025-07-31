@@ -13,10 +13,12 @@ import { Clapperboard, Download, Loader2, Sparkles, Zap, User } from "lucide-rea
 import { motion, AnimatePresence } from "framer-motion"
 
 interface VideoGenerationRequest {
-  prompt: string
+  mode: "text" | "image"
+  prompt?: string
   negativePrompt?: string
   resolution: "480P" | "1080P"
-  aspectRatio: "4:3" | "16:9" | "1:1"
+  aspectRatio?: "4:3" | "16:9" | "1:1" | "9:16" | "3:4" // Only for text mode
+  imageUrl?: string // Only for image mode
   userId?: string
 }
 
@@ -37,6 +39,10 @@ export default function ComicVideoApp() {
   const [error, setError] = useState<string | null>(null)
   const [generationProgress, setGenerationProgress] = useState(0)
   const [isEnhancing, setIsEnhancing] = useState(false)
+
+  // Image-to-Video mode state
+  const [mode, setMode] = useState<"text" | "image">("text")
+  const [imageUrl, setImageUrl] = useState("")
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -145,8 +151,14 @@ export default function ComicVideoApp() {
   }
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
+    // Validation based on mode
+    if (mode === "text" && !prompt.trim()) {
       setError("Please enter a prompt")
+      return
+    }
+
+    if (mode === "image" && !imageUrl.trim()) {
+      setError("Please enter an image URL")
       return
     }
 
@@ -156,18 +168,27 @@ export default function ComicVideoApp() {
     setGenerationProgress(0)
 
     try {
+      const requestBody: VideoGenerationRequest = {
+        mode,
+        resolution,
+        userId: user?.id,
+        ...(negativePrompt.trim() && { negativePrompt: negativePrompt.trim() }),
+        ...(mode === "text" && {
+          prompt: prompt.trim(),
+          aspectRatio,
+        }),
+        ...(mode === "image" && {
+          imageUrl: imageUrl.trim(),
+          ...(prompt.trim() && { prompt: prompt.trim() }),
+        }),
+      }
+
       const response = await fetch("/api/generate-video", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          prompt: prompt.trim(),
-          negativePrompt: negativePrompt.trim() || undefined,
-          resolution,
-          aspectRatio,
-          userId: user?.id,
-        } as VideoGenerationRequest),
+        body: JSON.stringify(requestBody),
       })
 
       if (!response.ok) {
@@ -332,7 +353,7 @@ export default function ComicVideoApp() {
             sixtyoneeighty
           </h1>
           <h2 className="text-xl md:text-2xl font-bold text-white mb-4 tracking-wide">
-            PROFESSIONAL TEXT-TO-VIDEO GENERATION
+            NOT SO AWFUL VIDEO GENERATION
           </h2>
           <div className="inline-block bg-[#f5724c] text-white px-6 py-2 rounded-full font-black text-sm border-4 border-white shadow-lg transform rotate-1">
             POWERED BY MOJO
@@ -351,19 +372,67 @@ export default function ComicVideoApp() {
                 <h3 className="text-2xl font-black text-[#f5724c] tracking-wide">GENERATE VIDEO</h3>
               </div>
 
+              {/* Mode Tabs */}
+              <div className="flex mb-6 bg-[#39557a] rounded-lg p-1 border-2 border-[#9cc2db]">
+                <button
+                  onClick={() => setMode("text")}
+                  className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "text"
+                      ? "bg-[#f5724c] text-white"
+                      : "text-[#9cc2db] hover:text-white"
+                    }`}
+                >
+                  📝 Text-to-Video
+                </button>
+                <button
+                  onClick={() => setMode("image")}
+                  className={`flex-1 py-2 px-4 rounded-md font-bold text-sm transition-all ${mode === "image"
+                      ? "bg-[#f5724c] text-white"
+                      : "text-[#9cc2db] hover:text-white"
+                    }`}
+                >
+                  🖼️ Image-to-Video
+                </button>
+              </div>
+
               <p className="text-[#9cc2db] mb-6 font-medium">
-                Create stunning 5 second videos from your text descriptions
+                {mode === "text"
+                  ? "Create stunning 5 second videos from your text descriptions"
+                  : "Transform your images into dynamic 5 second videos"
+                }
               </p>
 
               <div className="space-y-6">
+                {/* Image URL (Image mode only) */}
+                {mode === "image" && (
+                  <div>
+                    <Label htmlFor="imageUrl" className="text-[#f5724c] font-bold text-lg mb-2 block">
+                      Image URL *
+                    </Label>
+                    <Input
+                      id="imageUrl"
+                      placeholder="https://example.com/your-image.jpg"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
+                    />
+                    <p className="text-xs text-[#9cc2db] mt-1">
+                      Must be publicly accessible. Supports JPEG, PNG, BMP, WEBP. Max 10MB, 360-2000px.
+                    </p>
+                  </div>
+                )}
+
                 {/* Prompt */}
                 <div>
                   <Label htmlFor="prompt" className="text-[#f5724c] font-bold text-lg mb-2 block">
-                    Prompt
+                    {mode === "text" ? "Prompt *" : "Prompt (Optional)"}
                   </Label>
                   <Textarea
                     id="prompt"
-                    placeholder="Describe your video... (e.g., A kitten running in the moonlight)"
+                    placeholder={
+                      mode === "text"
+                        ? "Describe your video... (e.g., A kitten running in the moonlight)"
+                        : "Describe the motion or action... (e.g., A cat running on the grass)"
+                    }
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="min-h-[100px] bg-[#39557a] border-2 border-[#9cc2db] text-white placeholder:text-[#9cc2db] font-medium resize-none focus:border-[#f5724c] focus:ring-2 focus:ring-[#f5724c]/20"
@@ -371,26 +440,28 @@ export default function ComicVideoApp() {
                   />
                   <p className="text-xs text-[#9cc2db] mt-1">{prompt.length}/800 characters</p>
 
-                  {/* Enhance Prompt Button */}
-                  <div className="mt-3">
-                    <Button
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isEnhancing}
-                      className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white"
-                    >
-                      {isEnhancing ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Enhancing...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4" />
-                          ✨ Enhance Prompt
-                        </div>
-                      )}
-                    </Button>
-                  </div>
+                  {/* Enhance Prompt Button (Text mode only) */}
+                  {mode === "text" && (
+                    <div className="mt-3">
+                      <Button
+                        onClick={handleEnhancePrompt}
+                        disabled={!prompt.trim() || isEnhancing}
+                        className="bg-[#f5724c] hover:bg-[#e55a35] text-white font-bold border-2 border-white"
+                      >
+                        {isEnhancing ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Enhancing...
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            ✨ Enhance Prompt
+                          </div>
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Advanced Settings */}
@@ -420,29 +491,32 @@ export default function ComicVideoApp() {
                       </Select>
                     </div>
 
-                    <div>
-                      <Label className="text-[#f5724c] font-bold mb-2 block">Aspect Ratio</Label>
-                      <Select
-                        value={aspectRatio}
-                        onValueChange={(value: "4:3" | "16:9" | "1:1" | "9:16" | "3:4") => setAspectRatio(value)}
-                      >
-                        <SelectTrigger className="bg-[#2c3441] border-[#9cc2db] text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="16:9">16:9 (Widescreen)</SelectItem>
-                          <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
-                          <SelectItem value="1:1">1:1 (Square)</SelectItem>
-                          <SelectItem value="4:3">4:3 (Default)</SelectItem>
-                          <SelectItem
-                            value="3:4"
-                            disabled={resolution === "480P"}
-                          >
-                            3:4 (Portrait) {resolution === "480P" && "(1080P only)"}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    {/* Aspect Ratio (Text mode only) */}
+                    {mode === "text" && (
+                      <div>
+                        <Label className="text-[#f5724c] font-bold mb-2 block">Aspect Ratio</Label>
+                        <Select
+                          value={aspectRatio}
+                          onValueChange={(value: "4:3" | "16:9" | "1:1" | "9:16" | "3:4") => setAspectRatio(value)}
+                        >
+                          <SelectTrigger className="bg-[#2c3441] border-[#9cc2db] text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="16:9">16:9 (Widescreen)</SelectItem>
+                            <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
+                            <SelectItem value="1:1">1:1 (Square)</SelectItem>
+                            <SelectItem value="4:3">4:3 (Default)</SelectItem>
+                            <SelectItem
+                              value="3:4"
+                              disabled={resolution === "480P"}
+                            >
+                              3:4 (Portrait) {resolution === "480P" && "(1080P only)"}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -479,7 +553,7 @@ export default function ComicVideoApp() {
                     ) : (
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">💥</span>
-                        BAM! GENERATE THIS SHIT
+                        BAM! GENERATE THAT SHIT!
                       </div>
                     )}
                   </Button>
