@@ -7,8 +7,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "sixtyoneeighty - Pretty decent AI Video Generation",
-  description: "Create pretty good 5-second videos from text descriptions with Mojo",
+  title: "sixtyoneeighty - Pretty Decent AI Video Generation",
+  description: "Create pretty good 5-second videos from images or text with Mojo",
 }
 
 export default function RootLayout({
